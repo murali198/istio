@@ -1,0 +1,27 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: istio-ingressgateway-prod
+spec:
+  selector:
+    istio: ingressgateway
+    app: istio-ingressgateway
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "*"
+      tls:
+        httpRedirect: true
+    - port:
+        number: 443
+        name: https
+        protocol: HTTPS
+      hosts:
+        - "prod.example.localhost"
+      tls:
+        credentialName: example.localhost-dev-secret
+        mode: MUTUAL
+        s
