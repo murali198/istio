@@ -1869,7 +1869,33 @@ prometheus:
     ## The scrape configuraiton example below will find master nodes, provided they have the name .*mst.*, relabel the
     ## port to 2379 and allow etcd scraping provided it is running on all Kubernetes master nodes
     ##
-    additionalScrapeConfigs: []
+    additionalScrapeConfigs:
+    - job_name: blackbox
+      metrics_path: /probe
+      params:
+        module: [http_2xx]
+      static_configs:
+        - targets:
+            - idp-admin.iss.lexmark.com
+            - idp.iss.lexmark.com
+            - lpm.iss.lexmark.com
+            - eu.cloud.lexmark.com
+            - lexmark.cloud-connect.co
+            - my-account.iss.lexmark.com
+            - na.cloud.lexmark.com
+            - lsp.lexmark.com
+            - idp-services.iss.lexmark.com
+            - platform-apis.prod.us.tools.one.lexmark.com
+            - platform-apis.prod.eu.tools.one.lexmark.com
+            - reporting.iss.lexmark.com
+      relabel_configs:
+        - source_labels: [__address__]
+          target_label: __param_target
+        - source_labels: [__param_target]
+          target_label: instance
+        - target_label: __address__
+          replacement: prometheus-blackbox-exporter.monitoring.svc.cluster.local:9115
+
     # - job_name: kube-etcd
     #   kubernetes_sd_configs:
     #     - role: node

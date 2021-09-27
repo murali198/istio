@@ -1,0 +1,37 @@
+image:
+  repository: prom/blackbox-exporter
+  tag: v0.16.0
+  pullPolicy: IfNotPresent
+
+config:
+  modules:
+    http_2xx:
+      prober: http
+      timeout: 5s
+      http:
+        preferred_ip_protocol: "ip4"
+        tls_config:
+          insecure_skip_verify: true
+
+serviceMonitor:
+  enabled: true
+  defaults:
+    labels:
+      release: prom-operator
+    interval: 30s
+    scrapeTimeout: 30s
+    module: http_2xx
+  targets:
+    - name: example                    # Human readable URL that will appear in Prometheus / AlertManager
+      url: http://example.com/healthz  # The URL that blackbox will scrape
+      interval: 60s                    # Scraping interval. Overrides value set in `defaults`
+      scrapeTimeout: 60s               # Scrape timeout. Overrides value set in `defaults`
+      module: http_2xx                 # Module used for scraping. Overrides value set in `defaults`
+
+## Custom PrometheusRules to be defined
+## ref: https://github.com/coreos/prometheus-operator#customresourcedefinitions
+prometheusRule:
+  enabled: false
+  additionalLabels: {}
+  namespace: ""
+  rules: []
